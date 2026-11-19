@@ -20,7 +20,9 @@ function load() {
 let S = load();
 let pick = null;                                 // выбранная кликом иконка палитры
 const save = () => { localStorage.setItem(KEY, JSON.stringify(S)); stat(); markUsed(); };
-function fit(id) { const st = S[id], n = SLOTS[st.r] || 1; st.k = st.k.slice(0, n); while (st.k.length < n) st.k.push(null); }
+// число ячеек: роль задаёт начальное (1/2/4), кнопками «+» / «−» его можно менять (st.n), от 1 до 10
+const MAXN = 10;
+function fit(id) { const st = S[id], n = Math.max(1, Math.min(MAXN, st.n || SLOTS[st.r] || 1)); st.k = st.k.slice(0, n); while (st.k.length < n) st.k.push(null); }
 function toast(t) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 1600); }
 
 // ---------- наши персонажи ----------
@@ -47,10 +49,18 @@ function card(c) {
   inf.appendChild(el('div', 'now', 'Сейчас в игре: ' + esc(c.now)));
   const sel = el('select');
   for (const r of ['regular', 'mini', 'boss', 'hero']) { const o = el('option', null, ROLE[r]); o.value = r; if (st.r === r) o.selected = true; sel.appendChild(o); }
-  sel.onchange = () => { st.r = sel.value; fit(c.id); save(); d.replaceWith(card(c)); };
+  sel.onchange = () => { st.r = sel.value; delete st.n; fit(c.id); save(); d.replaceWith(card(c)); };
   inf.appendChild(sel);
   const sl = el('div', 'slots');
   st.k.forEach((k, i) => sl.appendChild(slot(c.id, i, k)));
+  // «+» — ещё ячейка, «−» — убрать последнюю (вместе со скиллом в ней)
+  const ctl = el('div', 'nctl');
+  const plus = el('button', 'nb', '+'), minus = el('button', 'nb', '−');
+  plus.title = 'Добавить ячейку'; minus.title = 'Убрать последнюю ячейку';
+  plus.disabled = st.k.length >= MAXN; minus.disabled = st.k.length <= 1;
+  plus.onclick = () => { st.n = st.k.length + 1; fit(c.id); save(); d.replaceWith(card(c)); };
+  minus.onclick = () => { st.n = st.k.length - 1; fit(c.id); save(); d.replaceWith(card(c)); };
+  ctl.appendChild(plus); ctl.appendChild(minus); sl.appendChild(ctl);
   inf.appendChild(sl);
   d.appendChild(inf);
   return d;
@@ -160,7 +170,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') clearPick();
 // ---------- кнопки ----------
 function exportObj() {
   const out = { what: 'Duel Arena — скиллы персонажей (конструктор)', saved: new Date().toISOString(), characters: {} };
-  for (const c of C) out.characters[c.id] = { name: c.n, role: S[c.id].r, skills: S[c.id].k.filter(Boolean).map(k => ({ key: k, name: AB[k] ? AB[k].n : k, dota_hero: AB[k] ? AB[k].h : '' })) };
+  for (const c of C) out.characters[c.id] = { name: c.n, role: S[c.id].r, slots: S[c.id].k.length, skills: S[c.id].k.filter(Boolean).map(k => ({ key: k, name: AB[k] ? AB[k].n : k, dota_hero: AB[k] ? AB[k].h : '' })) };
   return out;
 }
 $('#bExport').onclick = () => {
@@ -172,7 +182,7 @@ $('#fImport').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
   f.text().then(t => {
     const j = JSON.parse(t), ch = j.characters || {};
-    for (const c of C) if (ch[c.id]) S[c.id] = { r: ch[c.id].role || S[c.id].r, k: (ch[c.id].skills || []).map(s => s.key || s) };
+    for (const c of C) if (ch[c.id]) S[c.id] = { r: ch[c.id].role || S[c.id].r, n: ch[c.id].slots || undefined, k: (ch[c.id].skills || []).map(s => s.key || s) };
     save(); renderChars(); toast('Загружено');
   }).catch(() => toast('Не тот файл'));
 };
