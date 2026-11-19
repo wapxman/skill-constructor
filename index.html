@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Конструктор скиллов — Duel Arena</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="ttl">
+    <h1>Конструктор скиллов</h1>
+    <div class="sub">Duel Arena · только для нас, в игре ничего не меняет · обычный злодей — 1 скилл, мини-босс — 2, босс и герой — 4</div>
+  </div>
+  <div class="stat" id="stat"></div>
+  <div class="btns">
+    <button id="bExport" title="Скачать выбор файлом — его потом отдадим Клоду">Скачать JSON</button>
+    <button id="bCopy">Копировать</button>
+    <label class="btn">Загрузить<input type="file" id="fImport" accept=".json" hidden></label>
+    <button id="bReset" class="ghost" title="Вернуть вариант Клауди">Сбросить</button>
+  </div>
+</header>
+<main id="chars"></main>
+<div id="resizer" title="Потяните, чтобы изменить высоту панели Доты"></div>
+<section id="pal">
+  <div class="pal-head">
+    <input id="q" type="search" placeholder="Поиск: герой или скилл (например, Crystal Maiden, stun, Black Hole)">
+    <div class="chips" id="attrs"></div>
+    <span class="hint">Тяните иконку в ячейку наверху · или кликните иконку, потом ячейку · ячейку тяните обратно сюда — удалить</span>
+  </div>
+  <div id="heroes"></div>
+</section>
+<div id="tip"></div>
+<div id="toast"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
