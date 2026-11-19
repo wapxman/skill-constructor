@@ -67,7 +67,7 @@ function slot(cid, i, k) {
   b.ondragover = e => { e.preventDefault(); b.classList.add('over'); };
   b.ondragleave = () => b.classList.remove('over');
   b.ondrop = e => { e.preventDefault(); b.classList.remove('over'); dropOn(cid, i, e.dataTransfer.getData('text/plain')); };
-  b.onclick = () => { if (pick) { setSlot(cid, i, pick); clearPick(); } };
+  b.onclick = () => { if (pick) { setSlot(cid, i, pick); clearPick(); hideTip(); } else if (TOUCH && k) { const r = b.getBoundingClientRect(); setTimeout(() => showTip(k, 8, r.bottom + 6), 0); } };
   w.appendChild(b);
   w.appendChild(el('div', 'lb', k && AB[k] ? esc(AB[k].n) : ''));
   return w;
@@ -114,7 +114,12 @@ function renderHeroes() {
     for (const a of abs) {
       const im = el('img', 'ico'); im.src = a.i; im.loading = 'lazy'; im.dataset.k = a.k; im.draggable = true;
       im.ondragstart = e => { e.dataTransfer.setData('text/plain', 'a:' + a.k); hideTip(); };
-      im.onclick = () => { if (pick === a.k) return clearPick(); clearPick(); pick = a.k; im.classList.add('picked'); document.body.classList.add('picking'); toast('Теперь кликните ячейку наверху'); };
+      im.onclick = () => {
+        if (pick === a.k) { hideTip(); return clearPick(); }
+        clearPick(); pick = a.k; im.classList.add('picked'); document.body.classList.add('picking');
+        if (TOUCH) { const r = im.getBoundingClientRect(); showTip(a.k, 8, Math.max(8, r.top - 12)); }
+        else toast('Теперь кликните ячейку наверху');
+      };
       ab.appendChild(im);
     }
     r.appendChild(ab); box.appendChild(r);
@@ -133,6 +138,7 @@ pal.ondrop = e => { e.preventDefault(); pal.classList.remove('dropdel'); const d
 
 // ---------- подсказка ----------
 const tip = $('#tip');
+const TOUCH = matchMedia('(hover: none)').matches;   // телефон: описание по нажатию, а не по наведению
 function showTip(k, x, y) {
   const a = AB[k]; if (!a) return;
   // описание по-русски — из PDF Создателя (ChatGPT, «Dota 2 — все герои и способности»); нет — английское из dotaconstants
@@ -147,6 +153,7 @@ function showTip(k, x, y) {
   tip.style.top = (y + 16 + h > innerHeight ? y - h - 12 : y + 16) + 'px';
 }
 function hideTip() { tip.style.display = 'none'; }
+if (TOUCH) document.addEventListener('click', e => { if (!e.target.closest('.ico')) hideTip(); }, true);
 document.addEventListener('mousemove', e => { const t = e.target.closest('[data-k]'); if (t) showTip(t.dataset.k, e.clientX, e.clientY); else hideTip(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') clearPick(); });
 
