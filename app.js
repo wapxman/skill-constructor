@@ -105,7 +105,8 @@ function renderHeroes() {
   for (const h of D) {
     if (attr !== 'all-any' && h.a !== attr) continue;
     const heroHit = !q || h.n.toLowerCase().includes(q);
-    const abs = h.ab.filter(a => heroHit || a.n.toLowerCase().includes(q) || a.d.toLowerCase().includes(q));
+    const abs = h.ab.filter(a => heroHit || a.n.toLowerCase().includes(q) || a.d.toLowerCase().includes(q) ||
+      (a.r || '').toLowerCase().includes(q));
     if (!abs.length) continue;
     const r = el('div', 'hero');
     r.appendChild(el('div', 'hp', `<img src="${h.i}" alt="" loading="lazy"><div>${esc(h.n)}</div>`));
@@ -134,8 +135,12 @@ pal.ondrop = e => { e.preventDefault(); pal.classList.remove('dropdel'); const d
 const tip = $('#tip');
 function showTip(k, x, y) {
   const a = AB[k]; if (!a) return;
-  tip.innerHTML = `<b>${esc(a.n)}</b><div class="meta">${esc(a.h)}${a.b ? ' · ' + esc(a.b) : ''}${a.t ? ' · ' + esc(a.t) : ''}` +
-    `${a.cd ? '<br>Перезарядка: ' + esc(a.cd) : ''}${a.mc ? ' · Мана: ' + esc(a.mc) : ''}</div>${esc(a.d)}`;
+  // описание по-русски — из PDF Создателя (ChatGPT, «Dota 2 — все герои и способности»); нет — английское из dotaconstants
+  const cm = a.cm || [a.cd ? 'Перезарядка: ' + a.cd : '', a.mc ? 'Мана: ' + a.mc : ''].filter(Boolean).join(' | ');
+  tip.innerHTML = `<b>${esc(a.n)}</b><div class="meta">${esc(a.h)}${a.t ? ' · ' + esc(a.t) : ''}${cm ? '<br>' + esc(cm) : ''}</div>` +
+    esc(a.r || a.d) +
+    (a.sh ? `<div class="agh"><span>Aghanim’s Shard:</span> ${esc(a.sh)}</div>` : '') +
+    (a.sc ? `<div class="agh"><span>Aghanim’s Scepter:</span> ${esc(a.sc)}</div>` : '');
   tip.style.display = 'block';
   const w = tip.offsetWidth, h = tip.offsetHeight;
   tip.style.left = Math.min(x + 16, innerWidth - w - 8) + 'px';
