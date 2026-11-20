@@ -101,3 +101,6 @@ main { flex: 1; overflow: auto; padding: 6px 18px 20px; min-height: 120px; }
 }
 /* на сенсорных экранах нет наведения: крестик виден всегда */
 @media (hover: none) { .slot .box.full .x { display: block; } }
+
+/* 20.11: вкладки «Конструктор» / «Состав и озвучка» */
+.tabs{margin:4px 0 2px}.tabs a{display:inline-block;color:#cfd6e6;text-decoration:none;padding:4px 10px;border-radius:8px;background:#262a35;margin-right:6px;font-size:13px}.tabs a.on{background:#3b4a6b;color:#fff}
