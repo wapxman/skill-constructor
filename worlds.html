@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Миры — Duel Arena</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="worlds.css?v=1">
+</head>
+<body>
+<header>
+  <h1>Duel Arena</h1>
+  <nav class="tabs"><a href="index.html">Конструктор</a><a href="catalog.html">Состав и озвучка</a><a class="on" href="worlds.html">Миры</a></nav>
+  <span class="sub" id="sub"></span>
+  <div class="btns">
+    <button id="bChanges" class="ghost">Изменений: 0</button>
+    <button id="bExport" title="Скачать изменения файлом — его отдать Клоду">Скачать JSON</button>
+    <button id="bCopy">Копировать</button>
+    <label class="btn ghost">Загрузить<input type="file" id="fImport" accept=".json" hidden></label>
+    <button id="bReset" class="ghost" title="Вернуть как в игре">Сбросить</button>
+  </div>
+</header>
+<div id="pick" hidden><span id="pickTxt"></span><button id="pickX">Отмена</button></div>
+<main>
+  <p class="hint">Здесь всё как в игре сейчас. Можно менять: переставлять персонажей между мирами и строками, править числа, добавлять и убирать умения.
+  На игру это не влияет — правки хранятся в этом браузере. Чтобы я перенёс их в игру, нажмите «Скачать JSON» или «Копировать» и пришлите мне.<br>
+  <b>Как переставлять:</b> на компьютере — тяните карточку мышью. На телефоне — нажмите ✥ на карточке, потом место, куда поставить.
+  <span class="dm">×dm в описаниях — множитель урона волны (столбец «урон ×» в таблице волн мира).</span></p>
+  <div id="root"></div>
+</main>
+<div id="modal" hidden><div class="box"><div class="mh"><b id="mTitle"></b><button id="mX" class="ghost">Закрыть</button></div><div id="mBody"></div></div></div>
+<div id="zoom" hidden><img alt=""></div>
+<div id="toast"></div>
+<script src="worlds_data.js?v=1"></script>
+<script src="worlds.js?v=1"></script>
+</body>
+</html>
